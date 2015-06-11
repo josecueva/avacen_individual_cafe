@@ -10,13 +10,13 @@
 	//Implementada en linea 23 de envios.php
 
 	function resultado_sentencias($SQL){	
-			require("conect.php");   	
-			$cuenta=mysqli_num_rows($SQL);
-			while ($row = mysqli_fetch_array($SQL,MYSQLI_ASSOC)){
-				$envios[]=$row;	
-			}
-			return array($SQL,$cuenta,$envios);
+		require("conect.php");   	
+		$cuenta=mysqli_num_rows($SQL);
+		while ($row = mysqli_fetch_array($SQL,MYSQLI_ASSOC)){
+			$envios[]=$row;	
 		}
+		return array($SQL,$cuenta,$envios);
+	}
 
 	//Implementada en linea 32 de envios.php
 	function catalogo_fechas(){		
@@ -48,55 +48,50 @@
 	}
 
 	//Implementada en linea 6 de ficha_envio_nuevo.php
-	function ingresar_nuevo_envio($fecha,$destino,$chofer,$responsable)
-		{	
-			require("conect.php");   				
-			$SQL_edit="call SP_envios_ins(
-				'".$fecha."',
-				'".$destino."',
-				'".$chofer."',
-				'".$responsable."')";//Procedimientos Almacenado;
-			$resultado=mysqli_query($link, $SQL_edit);
-			$nuevo_id=mysqli_insert_id($link);
-			$cadena=str_replace("'", "", $SQL_edit);
-			return array($cadena, $resultado, $nuevo_id);
-		}
+	function ingresar_nuevo_envio($fecha,$destino,$chofer,$responsable)	{	
+		require("conect.php");   				
+		$SQL_edit="call SP_envios_ins(
+			'".$fecha."',
+			'".$destino."',
+			'".$chofer."',
+			'".$responsable."')";//Procedimientos Almacenado;
+		$resultado=mysqli_query($link, $SQL_edit);
+		$nuevo_id=mysqli_insert_id($link);
+		$cadena=str_replace("'", "", $SQL_edit);
+		return array($cadena, $resultado, $nuevo_id);
+	}
 
 	//Implementada en linea 5 de ficha_envio_editar.php
-	function editar_envio_presentar($envio)
-		{	
-			require("conect.php");   
-			$SQL="SELECT * FROM envios WHERE id='".$envio."' order by fecha desc";
-			$resultado=mysqli_query($link, $SQL);
-			$cuenta=mysqli_num_rows($resultado);
-			$envio = mysqli_fetch_array($resultado,MYSQLI_ASSOC);
+	function editar_envio_presentar($envio)	{	
+		require("conect.php");   
+		$SQL="SELECT * FROM envios WHERE id='".$envio."' order by fecha desc";
+		$resultado=mysqli_query($link, $SQL);
+		$cuenta=mysqli_num_rows($resultado);
+		$envio = mysqli_fetch_array($resultado,MYSQLI_ASSOC);
 
-			return array($resultado,$cuenta,$envio);
-		}
+		return array($resultado,$cuenta,$envio);
+	}
 
 	//Implementada en linea 8 de ficha_envio_editar.php REVISAR NO FUNCIONA¡¡¡¡ss
-	function editar_envio_actualizar($fecha,$destino,$chofer,$responsable,$envio)
-		{	
-			echo "hola ".$envio;
-			require("conect.php"); 
-			$SQL_edit="call SP_envios_upd(
-				'".$fecha."',
-				'".$destino."',
-				'".$chofer."',
-				'".$responsable."',
-				'".$envio."')";//Procedimientos Almacenado;
+	function editar_envio_actualizar($fecha,$destino,$chofer,$responsable,$envio){	
+		require("conect.php"); 
+		$SQL_edit="call SP_envios_upd(
+			'".$fecha."',
+			'".$destino."',
+			'".$chofer."',
+			'".$responsable."',
+			'".$envio."')";//Procedimientos Almacenado;
 
-			$resultado=mysqli_query($link, $SQL_edit) or die(mysqli_error($link));
-			$nuevo_id=mysqli_insert_id($link);
-			$cadena=str_replace("'", "", $SQL_edit);
+		$resultado=mysqli_query($link, $SQL_edit) or die(mysqli_error($link));
+		$nuevo_id=mysqli_insert_id($link);
+		$cadena=str_replace("'", "", $SQL_edit);
 			return array($resultado,$nuevo_id,$cadena);
-		}
-
+	}
 
 	//FALTA¡¡¡¡¡Implementada en linea 8 de ficha_envio.php
 	function ficha_envio_presentar($link)
 		{				
-			
+			require("conect.php");
 		}
 
 ?>

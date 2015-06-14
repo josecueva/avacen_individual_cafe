@@ -1,45 +1,20 @@
 <?php
-	include ("cabecera.php");
+	include ("cabecera.php");	
+	include ("envios_funciones.php");
+	include ("certificaciones_funciones.php");
 	require("conect.php");
-	$SQL="SELECT * FROM envios WHERE id = '".$_GET["envio"]."'";
-	$resultado=mysqli_query($link, $SQL);
-	$row = mysqli_fetch_array($resultado,MYSQLI_ASSOC);
-	$envios=$row;
+	$criterio='editar';
+	//funcion
+	$envios=ficha_envio_presentar($_GET["envio"],$criterio);
 	echo "<div id='imprimir'>";
 	echo "<div align=center><h1>GUÍA DE CARGA DEL ENVÍO ".$_GET["envio"]."</h1><br><br>";
 
 	echo "<h3>Destino: ".$envios["destino"]."<br><h4>".date("d-m-Y H:i",strtotime($envios["fecha"]))."<br>Chófer: ".$envios["chofer"]."<br>Responsable: ".$envios["responsable"]. "<br><br>";
-
+			$criterio2='descripcion';
 			unset($contenido);
 			unset($cantidades);
-			$SQL="SELECT despachos.*, persona.*, catas.puntuacion, lotes.*, socios.* FROM despachos 
-			LEFT JOIN catas on despachos.lote=catas.lote 
-			LEFT JOIN lotes on despachos.lote=lotes.id 
-			LEFT JOIN socios on lotes.id_socio=socios.id_socio
-            LEFT JOIN persona on socios.id_persona= persona.id_persona
-            
-			WHERE despachos.envio='".$envios["id"]."' order by despachos.fecha desc";
-
-			$resultado=mysqli_query($link, $SQL);
-			$cuenta_despachos=mysqli_num_rows($resultado);
-			if($cuenta_despachos==0){$contenido[]="ENVIO SIN CONTENIDO";$cantidades[]=0;}
-			else{
-			while ($row = mysqli_fetch_array($resultado,MYSQLI_ASSOC))
-					{
-					 $ids[]=$row["id"];
-					 $contenido[$row["id"]]["lote"]=$row["codigo_lote"];
-					 $contenido[$row["id"]]["cantidad"]=$row["cantidad"];
-					 $contenido[$row["id"]]["codigo"]=$row["codigo"];
-					 $contenido[$row["id"]]["nombres"]=$row["nombres"];
-					 $contenido[$row["id"]]["apellidos"]=$row["apellidos"];
-					 $contenido[$row["id"]]["poblacion"]=$row["poblacion"];
-					 $contenido[$row["id"]]["humedad"]=$row["humedad"];
-					 $contenido[$row["id"]]["puntuacion"]=$row["puntuacion"];
-					 $cantidades[]=$row["cantidad"];
-					 $puntuaciones[]=$row["puntuacion"];
-					 $humedades[]=$row["humedad"];
-					}
-			}				
+			//funcion
+			list($ids,$contenido,$cantidades,$puntuaciones,$humedades)=ficha_envio_presentar2($envios["id"],$criterio2);			
 	if(isset($ids)){
 			
 		echo "<table class=tablas>";
@@ -56,7 +31,7 @@
 		foreach($ids as $id){			
 			$estatus=certificacion($contenido[$id]["codigo"]);
 			if(isset($estatus)){
-				$estatus_actual=max(array_keys($estatus));
+				$estatus_actual=$estatus;
 				if($estatus[$estatus_actual]["estatus"]=="O"){$estatus_t="<img title='socio CON certificación orgánica' src=images/organico.png width=25>";}else{$estatus_t="<img title='socio SIN certificación orgánica' src=images/noorganico.png width=25>";}
 			}
 			else{
@@ -72,8 +47,8 @@
 			echo "<td align=center>".$contenido[$id]["cantidad"]." qq</td>";
 			echo "</tr>";
 		}	
-	if(count(array_filter($puntuaciones))>0){$media_puntuaciones=round(array_sum($puntuaciones)/count(array_filter($puntuaciones)),2);}else{$media_puntuaciones=$puntuaciones[0];}
-	if(count(array_filter($humedades))>0){$media_humedades=round(array_sum($humedades)/count(array_filter($humedades)),2);}else{$media_humedades=$humedades[0];}
+		//funcion
+		list ($media_humedades,$media_puntuaciones)=ficha_envio_calculo($puntuaciones,$humedades);
 	echo "<tr>";
 		echo "<th align=right colspan=4><b>TOTAL</b></td>";
 		echo "<th align=center><b>".$media_humedades." %</b></td>";

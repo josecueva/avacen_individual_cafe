@@ -1,9 +1,9 @@
 	<?php
 	include ("cabecera.php");
 	include ("envios_funciones.php");
-
+	$criterio='editar';
 	//funcion
-	@list($resultado,$cuenta,$envio)=editar_envio_presentar($_GET["envio"]);
+	@list($resultado,$cuenta,$envio)=editar_envio_presentar($_GET["envio"],$criterio);
 	if(isset ($_POST["fecha"])){
 		//FUNCION
 		list($resultado,$nuevo_id,$cadena)=editar_envio_actualizar($_POST["fecha"],$_POST["destino"],$_POST["chofer"],$_POST["responsable"],$_POST["envio"]);
